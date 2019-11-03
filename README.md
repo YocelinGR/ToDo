@@ -92,18 +92,16 @@ Al terminar la sesión, deberán hacer otro **pull request** donde reflejarán e
 
 2. Asígnale un identificador a la celda del ```UITableViewController```. 
 
-3. 
 
 #### Modelo 
 
 1. Crea un modelo para un objeto llamado ```ToDo``` y define las siguientes propiedades: 
-   * Título, indicador sobre si ya se completó el ToDo, fecha, notas.
+   * Título, indicador para saber si ya se completó el ToDo, fecha, notas.
    * Ojo, no todos los ToDo tendrán notas. ¿Qué significa esto para la definición de mi modelo?
 2. Dentro del modelo  ```ToDo```, escribe un método estático (```static```) que obtenga la información guardada en disco y regrese un arreglo de ```ToDo```'s si es que los logró encontrar. (considera usar opcionales para el arreglo que tiene que regresar esta función. El código de esta función la escribirás más adelante, por lo que regresa ```nil``` por el momento. 
 3. Dentro del modelo ```ToDo```, escribe otro método estático encargado de generar un arreglo de ```ToDo``` con información de prueba (mock-up data). 
    * Como mockup data, para el atributo de fecha, asigna lo siguiente: (para los demás parámetros asígnale los datos que quieras)
    * ```ToDo(title: "Un título", isComplete: false, dueDate: Date(), notes: "...")```
-4. 
 
 #### Controlador 
 
@@ -136,14 +134,202 @@ Al terminar la sesión, deberán hacer otro **pull request** donde reflejarán e
 
 #### Controlador
 
-1. Agrega el código necesario para borrar elementos del ```UITableView```. 
-2. Agrega un ```editButtonItem``` a la propiedad ```leftBarButtonItem``` del navigation bar. 
+1. Agrega el código necesario para borrar elementos del ```UITableView```.
+2. Agrega un ```editButtonItem``` a la propiedad ```leftBarButtonItem``` del navigation bar.
 
 #### Punto de control segunda sección 
 
 <img src="images/ui-3.png" alt="icon" style="zoom: 50%;" />
 
 <img src="images/ui-4.png" alt="icon" style="zoom:50%;" />
+
+---
+
+#### Tercer sección: Static Table View 
+
+#### UI
+
+1. Para el ```UITableView``` de hasta la derecha, cambia el contenido de ```Dynamic Prototypes``` a ```Static Content```  y cambia el estilo a ```Grouped```. 
+2. Agrega dos bar button items, uno llamado ```Cancel``` y otro llamado ```Save```. 
+3. Realiza el punto 1 del Controlador.
+4. Vincula estos dos items a la función ```unwind``` del ```ToDoTableViewController```. 
+5. Agrega un identificador al segue del botón ```Save```. 
+6. Asegúrate que el table view tenga tres secciones, cada sección con solo una celda. 
+
+
+
+1. Actualiza el header de la sección 1 a **Basic Info**. 
+2. Arrastra un **TextField** y un **Button**.
+3. Para el **Button**, y usando constraints:
+   1. Céntralo verticalmente dentro del contenedor. 
+   2. Alinea el margen izquierdo (leading) al margen izquierdo (leading) de la celda. 
+   3. Width: 36
+   4. Height: 36
+   5. Elimina el título del botón. 
+   6. Descarga **SFSymbols** que es una biblioteca de imágenes de objetos. https://developer.apple.com/design/human-interface-guidelines/sf-symbols/overview/
+   7. Observa la propiedad **State config** en el inspector de atributos:
+      1. Default: escoge una imagen con una palomita (checkmark).
+      2. Selected: escoge una imagen con un checkmark con el fondo relleno. 
+
+1. Para el **TextField**, y usando constraints:
+   1. Céntralo verticalmente en el contenedor. 
+   2. Alinea el margen izquierdo (leading) al margen izquierdo (leading) de la celda con una separacion de 8 pixeles. 
+   3. Alinea el margen derecho (trailing) al margen derecho (trailing) de la celda. 
+   4. Placeholder: **Recuérdame ...**
+
+Finalmente, termina por construir la siguiente interfaz
+
+<img src="images/im23.png" alt="icon" style="zoom:33%;" />
+
+Algunos tips:
+
+1. Para la segunda y tercer sección:
+   1. Cambia el tamaño de la celda a 200:
+      1. Selecciona la celda > Size Inspector > Deselecciona Automatic > Escribe 200. 
+   2. Los elementos que ves tienen, de igual manera, constraints:
+      1. Para la segunda sección: dos labels y un **DatePicker**.
+      2. Para la tercer sección: solamente un **UITextView**.
+
+#### Controlador
+
+1. Agrega un método de ```unwind``` para poder regresar al ```UITableView``` principal.
+
+2. Crea una clase que herede del ```UITableViewController``` y asígnala al storyboard del table view estático, llama a esta clase ```ToDoViewController```. 
+
+3. Posteriormente, crea outlets para todos los elementos de la interfaz y uno más para el butón **Save**. 
+
+4. Escribe un método que active o desactive al **Save** button dependiendo de si existe texto dentro del TextField. 
+
+5. Crea una acción para el textfield:
+
+   1. <img src="images/im24.png" alt="icon" style="zoom:70%;" />
+   2. Manda a llamar al método que creaste dentro del **viewDidLoad()** y **textEditingChanged**.
+
+6. Crea otra acción para el textfield, pero ahora cuando ocurra el evento **Primary Action Triggered**
+
+   1. <img src="images/im25.png" alt="icon" style="zoom:70%;" />
+
+   2. Y dentro de esa función escribe lo siguiente: 
+
+      1. ```swift
+         titleTextField.resignFirstResponder() //yo nombré a mi outlet titleTextField, pero sustitúyelo por el nombre que tu le diste. 
+         ```
+
+   Esta función se encarga de que cuando el usuario le de click al botón return del teclado, el teclado se ocultará.
+
+7. Ahora, agrega un IBAction más para que el botón de **isComplete** cambie su estado. Es decir, que cuando el usuario le de click al botón para indicar si el ToDo está completo, éste botón tiene que cambiar su imagen. Para lo anterior, agrega el siguiente código a la función que creaste. 
+
+   1. ```swift
+      isCompleteButton.isSelected = !isCompleteButton.isSelected
+      ```
+
+8. Completa el paso 1 del Modelo. 
+
+9. Agrega una función encargada de recibir un objeto de tipo Date como parámetro y actualiza el label para que muestre la fecha indicada por el usuario en el DatePicker usando el dateformatter que creaste dentro del modelo. Recuerda como llamar propiedades estáticas definidas dentro de una estructura. 
+
+   1. DateFormatter tiene un método llamado ```string(from: Date())``` encargado de regresar un String a partir de un Date. Llama a éste método y asígnalo al label. 
+
+10. Recuerda llamar a la función que acabas de crear, también, desde del ```viewDidLoad()```. 
+
+11. Agrega un @IBAction para el date picker y llama a la función del punto 9. 
+
+
+
+##### Expandir y colapsar la celda del DatePicker 
+
+1. La altura de la celda del DatePicker (Section 1, Row 0) debería depender de si el usuario le da click o no, si le da click, ésta se debe expandir y si le da click de nuevo, ésta debe colapsar. Pero antes, agrega una variable booleana que indique si el DatePicker está escondido. 
+
+2. Dentro de ```ToDoViewController``` sobrecarga el método ```tableView(_ tableView:, heightForRowAt indexPath: )```.  
+
+   1. ```swift
+      override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+              let normalCellHeight = CGFloat(44)
+              let largeCellHeight = CGFloat(200)
+              
+              switch indexPath {
+              case [1,0]:
+                  return isPickerHidden ? normalCellHeight:largeCellHeight
+              case [2,0]:
+                  return largeCellHeight
+              default:
+                  return normalCellHeight
+              }
+          }
+      ```
+
+3. Ahora, sobre carga el método ```didSelectRowAt```:
+
+   1. ```swift
+      override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+              switch (indexPath) {
+              case [1,0]:
+                  isPickerHidden = !isPickerHidden
+                  print(isPickerHidden)
+      
+                  dueDateLabel.textColor = isPickerHidden ? .black : tableView.tintColor
+      
+                  tableView.beginUpdates()
+                  tableView.endUpdates()
+              default:
+                  break
+              }
+          }
+      ```
+
+#### Modelo:
+
+1. El texto para el label de la fecha debere reflejar el valor escogido por el usuario en el DatePicker. Pero primero necesitas una manera de convertir, a partir de un objeto Date, un String. Agrega una constante estática a ToDo que sea de tipo DateFormatter.
+
+   ```swift
+   static let dueDateFormatter: DateFormatter = {
+           let formatter = DateFormatter()
+           formatter.dateStyle = .short
+           formatter.timeStyle = .short
+           return formatter
+       }()
+   ```
+
+#### Punto de control:
+
+<img src="images/im26.png" alt="icon" style="zoom:33%;" />
+
+![icon](images/im27.png)
+
+---
+
+### Cuarta sección: Crear y guardar el modelo de datos
+
+Ahora que tienes ya casi toda la interfaz lista, es hora de guardar un ToDo. Hay que hacer básicamente dos cosas:
+
+1. Obtener los datos de la interfaz para mandarlo al ```ToDoTableViewController``` mediante un segue.
+
+   1. Dentro de ```ToDoViewController``` sobre carga el método ```prepare(for segue: )``` y asegúrate que el identificador del segue sea el correcto: 
+
+      ```swift
+      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+              super.prepare(for: segue, sender: sender)
+              
+              guard segue.identifier == "SaveUnwind" else {return}
+              
+              let title = titleTextField.text!
+              let isComplete = isCompleteButton.isSelected
+              let dueDate = datePicker.date
+              let notes = notesTextView.text
+              
+          }
+      ```
+
+   2. Crea una propiedad llamada ```todo``` de tipo ```ToDo?```  (esta variable debe ser opcional). 
+
+2. Insertar el ToDo al tableview del ```ToDoTableViewController```. 
+
+   1. Dentro de la función ```unwind``` agrega el código necesario para aceptar el ```todo``` de ```ToDoViewController```. 
+
+#### Punto de control:
+
+![icon](images/im28.png)
+
+![icon](images/im27.png)
 
 ---
 
