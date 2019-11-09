@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ToDo {
+struct ToDo: Codable {
     var title: String
     var date: Date
     var isCompleted: Bool
@@ -22,7 +22,9 @@ struct ToDo {
     }
     
     static func getToDos() -> [ ToDo ]? {
-        return nil
+        guard let codedTodos = try? Data(contentsOf: ArchiveUrl) else {return nil}
+        let propertyListDecoder = PropertyListDecoder()
+        return try? propertyListDecoder.decode(Array<ToDo>.self, from: codedTodos)
     }
     static func generateTodos () -> [ ToDo ] {
         return [
@@ -36,6 +38,15 @@ struct ToDo {
     formatter.dateStyle = .short
     formatter.timeStyle = .short
     return formatter
+    }
+    
+    static let DocumentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveUrl = DocumentsDirectory.appendingPathComponent("todos").appendingPathExtension("plist")
+    
+    static func saveToDos(_ todos: [ToDo]) {
+        let propertyListEncoder = PropertyListEncoder()
+        let codedTodos = try? propertyListEncoder.encode(todos)
+        try? codedTodos?.write(to: ArchiveUrl, options: .noFileProtection)
     }
 }
 

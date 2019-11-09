@@ -10,7 +10,8 @@ import UIKit
 
 class ToDoTableViewController: UITableViewController {
     
-    var ToDoArr = ToDo.generateTodos()
+    var ToDoArr = ToDo.getToDos()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,7 +19,7 @@ class ToDoTableViewController: UITableViewController {
     navigationItem.leftBarButtonItem = editButtonItem
     }
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return ToDoArr.count
+        return ToDoArr?.count ?? 0
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //1. crear celda
@@ -36,6 +37,7 @@ class ToDoTableViewController: UITableViewController {
             ToDoArr.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
             tableView.reloadData()
+            ToDo.saveToDos(ToDoArr)
         }
     }
     
@@ -49,10 +51,12 @@ class ToDoTableViewController: UITableViewController {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 ToDoArr[selectedIndexPath.row] = toDo
                 tableView.reloadRows(at: [selectedIndexPath], with: .none)
+                ToDo.saveToDos(ToDoArr)
             } else {
                 let newIndexPath = IndexPath(row: ToDoArr.count, section: 0)
                 ToDoArr.append(toDo)
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
+                ToDo.saveToDos(ToDoArr)
             }
         }
     }
